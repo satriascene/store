@@ -71,10 +71,12 @@ export default class App extends Component<Props> {
         <Text style={styles.welcome}>
           Welcome to React Native!
         </Text>
+        <Text style={styles.codepush}>Added With Code Push</Text>
         <Button title="Send Event" onPress={()=>this.sendEvent()} />
         <Button title="Native Crash" onPress={()=>this.nativeCrash()} />
         <Button title="JS Crash" onPress={()=>this.jsCrash()} />
         <Button title="Code Push" onPress={()=>this.codePushSync()} />
+        {this.state.logs.map((log,i)=> <Text key={i}>{log}</Text>)}
         <Text>{JSON.stringify(this.state.logs)}</Text>
       </View>
     );
@@ -82,6 +84,10 @@ export default class App extends Component<Props> {
 }
 
 const styles = StyleSheet.create({
+  codepush:{
+    fontSize:25,
+    textAlign:'center'
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
