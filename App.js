@@ -9,8 +9,12 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  Button
 } from 'react-native';
+import Analytics from 'appcenter-analytics';
+import Crashes from 'appcenter-crashes';
+import CodePush from 'react-native-code-push';
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
@@ -21,18 +25,57 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+  sendEvent(){
+    Analytics.trackEvent("My Custom Event",{
+      prop1: new Date().getSeconds()
+    })
+  }
+
+  nativeCrash(){
+    Crashes.generateTestCrash();
+  }
+
+  jsCrash(){
+    this.func1()
+  }
+  func1(){this.func2()}
+  func2(){this.func3()}
+  func3(){this.func4()}
+  func4(){this.func5()}
+
+  func5(){
+    throw new Error('My uncaught javascript exception');    
+  }
+
+  constructor(props){
+    super(props)
+    this.state={logs : []}
+  }
+  codePushSync(){
+    this.setState({logs : ['Started at ' + new Date().getTime()]})
+    CodePush.sync({
+      updateDialog:true,
+      installMode:CodePush.InstallMode.IMMEDIATE
+    }, (status)=>{
+      for(var key in CodePush.SyncStatus){
+        if(status === CodePush.SyncStatus[key]){
+          this.setState(prevState => ({logs:[...prevState.logs,key.replace(/_/g, ' ')]}))
+          break
+        }
+      }
+    })
+  }
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
           Welcome to React Native!
         </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
+        <Button title="Send Event" onPress={()=>this.sendEvent()} />
+        <Button title="Native Crash" onPress={()=>this.nativeCrash()} />
+        <Button title="JS Crash" onPress={()=>this.jsCrash()} />
+        <Button title="Code Push" onPress={()=>this.codePushSync()} />
+        <Text>{JSON.stringify(this.state.logs)}</Text>
       </View>
     );
   }
