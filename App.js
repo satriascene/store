@@ -86,7 +86,8 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
   codepush:{
     fontSize:25,
-    textAlign:'center'
+    textAlign:'center',
+    color:'red'
   },
   container: {
     flex: 1,
